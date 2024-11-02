@@ -16,6 +16,7 @@ class DrawingApp:
 
         self.setup_ui()
 
+
         self.last_x, self.last_y = None, None
         self.pen_color = 'black'
 
