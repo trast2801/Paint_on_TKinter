@@ -47,6 +47,9 @@ class DrawingApp:
         self.brush_size_scale = tk.Scale(control_frame, from_=1, to=10, orient=tk.HORIZONTAL)
         self.brush_size_scale.pack(side=tk.LEFT)
 
+        erase_button = tk.Button(control_frame, text="Ластик", command=self.erase)
+        erase_button.pack(side=tk.LEFT)
+
 
 
     def paint(self, event):
@@ -76,6 +79,16 @@ class DrawingApp:
         '''Метод для выбора цвета кисти.'''
         self.pen_color = colorchooser.askcolor(color=self.pen_color)[1]
 
+    def get_canvas_color(self):
+        '''метод получает текущий фон '''
+        color = self.canvas['bg']
+        return color
+    def erase(self):
+        '''Метод отвечает за действие ластика.'''
+        self.canvas.pack()
+        self.pen_color = self.get_canvas_color()
+
+        #self.pen_color = 'white'
 
     def save_image(self, event=None):
         '''Метод сохраняет изображение.'''
