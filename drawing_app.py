@@ -22,6 +22,8 @@ class DrawingApp:
 
         self.canvas.bind('<B1-Motion>', self.paint)
         self.canvas.bind('<ButtonRelease-1>', self.reset)
+        self.canvas.bind('<Button-3>', self.pick_color)
+
 
     def setup_ui(self):
         '''Метод отвечает за создание и расположение виджетов управления.'''
@@ -89,6 +91,16 @@ class DrawingApp:
         self.pen_color = self.get_canvas_color()
 
         #self.pen_color = 'white'
+
+    def pick_color(self, event):
+        ''' Метод для выбора цвета пипеткой.'''
+        x, y = event.x, event.y
+        pixel_color = self.image.getpixel((x, y))
+        self.pen_color = '#%02x%02x%02x' % pixel_color
+        #self.pen_color = pixel_color
+        print(f"Выбран цвет: {self.pen_color}")
+
+
 
     def save_image(self, event=None):
         '''Метод сохраняет изображение.'''
