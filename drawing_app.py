@@ -1,7 +1,8 @@
-import tkinter as tk
 from tkinter import colorchooser, filedialog, messagebox
 from PIL import Image, ImageDraw
-
+import tkinter as tk
+import tkinter.ttk as ttk
+from tktooltip import ToolTip
 
 class DrawingApp:
     def __init__(self, root):
@@ -10,6 +11,7 @@ class DrawingApp:
         self.root.title("Рисовалка с сохранением в PNG")
 
         self.image = Image.new("RGB", (600, 400), "white")
+
         self.draw = ImageDraw.Draw(self.image)
 
         self.canvas = tk.Canvas(root, width=600, height=400, bg='white')
@@ -26,6 +28,8 @@ class DrawingApp:
         self.root.bind('<Control-s>', self.save_image)
         self.root.bind('<Control-c>', self.choose_color)
 
+
+
     def setup_ui(self):
         '''Метод отвечает за создание и расположение виджетов управления.'''
         control_frame = tk.Frame(self.root)
@@ -37,6 +41,9 @@ class DrawingApp:
         color_button = tk.Button(control_frame, text="Выбрать цвет", command=self.choose_color)
         color_button.pack(side=tk.LEFT)
 
+        color_button.bind("<Enter>", self.on_enter_color)
+        color_button.bind("<Leave>", self.on_leave_color)
+
         '''Создание выпадающего списка.Выбор размера кисти из списка'''
         brush_sizes = [1, 2, 5, 10]
         self.brush_size = tk.IntVar()
@@ -44,8 +51,13 @@ class DrawingApp:
         brush_size_option = tk.OptionMenu(self.root, self.brush_size, *brush_sizes)
         brush_size_option.pack(side=tk.LEFT)
 
+
+        # tool_tip = ttk.Label(self)
         save_button = tk.Button(control_frame, text="Сохранить", command=self.save_image)
         save_button.pack(side=tk.LEFT)
+        # tool_tip.bind_widget(save_button, balloonmsg="This is a Button")
+        save_button.bind("<Enter>", self.on_enter)
+        save_button.bind("<Leave>", self.on_leave)
 
         self.brush_size_scale = tk.Scale(control_frame, from_=1, to=10, orient=tk.HORIZONTAL)
         self.brush_size_scale.pack(side=tk.LEFT)
@@ -53,6 +65,17 @@ class DrawingApp:
         erase_button = tk.Button(control_frame, text="Ластик", command=self.erase)
         erase_button.pack(side=tk.LEFT)
 
+    def on_enter(self,event):
+        event.widget.config(text="Ctrl+s")
+
+    def on_leave(self, event):
+        event.widget.config(text="Сохранить")
+
+    def on_enter_color(self,event):
+        event.widget.config(text="Ctrl+c")
+
+    def on_leave_color(self, event):
+        event.widget.config(text="Выбрать цвет")
 
 
     def paint(self, event):
@@ -71,7 +94,6 @@ class DrawingApp:
         '''Метод сбрасывает последние координаты кисти.'''
         self.last_x, self.last_y = None, None
 
-
     def clear_canvas(self):
         '''Метод очищает холст.'''
         self.canvas.delete("all")
@@ -86,22 +108,21 @@ class DrawingApp:
         '''метод получает текущий фон '''
         color = self.canvas['bg']
         return color
+
     def erase(self):
         '''Метод отвечает за действие ластика.'''
         self.canvas.pack()
         self.pen_color = self.get_canvas_color()
 
-        #self.pen_color = 'white'
+        # self.pen_color = 'white'
 
     def pick_color(self, event):
         ''' Метод для выбора цвета пипеткой.'''
         x, y = event.x, event.y
         pixel_color = self.image.getpixel((x, y))
         self.pen_color = '#%02x%02x%02x' % pixel_color
-        #self.pen_color = pixel_color
+        # self.pen_color = pixel_color
         print(f"Выбран цвет: {self.pen_color}")
-
-
 
     def save_image(self, event=None):
         '''Метод сохраняет изображение.'''
@@ -111,8 +132,6 @@ class DrawingApp:
                 file_path += '.png'
             self.image.save(file_path)
             messagebox.showinfo("Информация", "Изображение успешно сохранено!")
-
-
 
 
 def main():
