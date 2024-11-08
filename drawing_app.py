@@ -23,7 +23,8 @@ class DrawingApp:
         self.canvas.bind('<B1-Motion>', self.paint)
         self.canvas.bind('<ButtonRelease-1>', self.reset)
         self.canvas.bind('<Button-3>', self.pick_color)
-
+        self.root.bind('<Control-s>', self.save_image)
+        self.root.bind('<Control-c>', self.choose_color)
 
     def setup_ui(self):
         '''Метод отвечает за создание и расположение виджетов управления.'''
@@ -79,7 +80,7 @@ class DrawingApp:
 
     def choose_color(self, event=None):
         '''Метод для выбора цвета кисти.'''
-        self.pen_color = colorchooser.askcolor(color=self.pen_color)[1]
+        self.pen_color = colorchooser.askcolor(color=self.pen_color)
 
     def get_canvas_color(self):
         '''метод получает текущий фон '''
