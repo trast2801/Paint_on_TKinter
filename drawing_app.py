@@ -1,8 +1,7 @@
+import tkinter as tk
 from tkinter import colorchooser, filedialog, messagebox
 from PIL import Image, ImageDraw
-import tkinter as tk
-import tkinter.ttk as ttk
-from tktooltip import ToolTip
+
 
 class DrawingApp:
     def __init__(self, root):
@@ -11,11 +10,13 @@ class DrawingApp:
         self.root.title("Рисовалка с сохранением в PNG")
 
         self.image = Image.new("RGB", (600, 400), "white")
-
         self.draw = ImageDraw.Draw(self.image)
 
         self.canvas = tk.Canvas(root, width=600, height=400, bg='white')
         self.canvas.pack()
+
+        self.color_preview = tk.Label(root, width=20, height=2, bg='white', relief=tk.RAISED, borderwidth=1)
+        self.color_preview.pack()
 
         self.setup_ui()
 
@@ -25,10 +26,8 @@ class DrawingApp:
         self.canvas.bind('<B1-Motion>', self.paint)
         self.canvas.bind('<ButtonRelease-1>', self.reset)
         self.canvas.bind('<Button-3>', self.pick_color)
-        self.root.bind('<Control-s>', self.save_image)
-        self.root.bind('<Control-c>', self.choose_color)
-
-
+        self.root.bind('<Control-s>', self.save_image)  # Добавление горячих клавиш для сохранения
+        self.root.bind('<Control-c>', self.choose_color)  # Добавление горячих клавиш для выбора цвета
 
     def setup_ui(self):
         '''Метод отвечает за создание и расположение виджетов управления.'''
@@ -41,9 +40,6 @@ class DrawingApp:
         color_button = tk.Button(control_frame, text="Выбрать цвет", command=self.choose_color)
         color_button.pack(side=tk.LEFT)
 
-        color_button.bind("<Enter>", self.on_enter_color)
-        color_button.bind("<Leave>", self.on_leave_color)
-
         '''Создание выпадающего списка.Выбор размера кисти из списка'''
         brush_sizes = [1, 2, 5, 10]
         self.brush_size = tk.IntVar()
@@ -51,32 +47,14 @@ class DrawingApp:
         brush_size_option = tk.OptionMenu(self.root, self.brush_size, *brush_sizes)
         brush_size_option.pack(side=tk.LEFT)
 
-
-        # tool_tip = ttk.Label(self)
         save_button = tk.Button(control_frame, text="Сохранить", command=self.save_image)
         save_button.pack(side=tk.LEFT)
-        # tool_tip.bind_widget(save_button, balloonmsg="This is a Button")
-        save_button.bind("<Enter>", self.on_enter)
-        save_button.bind("<Leave>", self.on_leave)
 
         self.brush_size_scale = tk.Scale(control_frame, from_=1, to=10, orient=tk.HORIZONTAL)
         self.brush_size_scale.pack(side=tk.LEFT)
 
         erase_button = tk.Button(control_frame, text="Ластик", command=self.erase)
         erase_button.pack(side=tk.LEFT)
-
-    def on_enter(self,event):
-        event.widget.config(text="Ctrl+s")
-
-    def on_leave(self, event):
-        event.widget.config(text="Сохранить")
-
-    def on_enter_color(self,event):
-        event.widget.config(text="Ctrl+c")
-
-    def on_leave_color(self, event):
-        event.widget.config(text="Выбрать цвет")
-
 
     def paint(self, event):
         '''Метод для рисования на холсте при движени мыши.'''
@@ -102,7 +80,8 @@ class DrawingApp:
 
     def choose_color(self, event=None):
         '''Метод для выбора цвета кисти.'''
-        self.pen_color = colorchooser.askcolor(color=self.pen_color)
+        self.pen_color = colorchooser.askcolor(color=self.pen_color)[1]
+        self.update_color_preview()
 
     def get_canvas_color(self):
         '''метод получает текущий фон '''
@@ -123,6 +102,7 @@ class DrawingApp:
         self.pen_color = '#%02x%02x%02x' % pixel_color
         # self.pen_color = pixel_color
         print(f"Выбран цвет: {self.pen_color}")
+        self.update_color_preview()
 
     def save_image(self, event=None):
         '''Метод сохраняет изображение.'''
@@ -132,6 +112,10 @@ class DrawingApp:
                 file_path += '.png'
             self.image.save(file_path)
             messagebox.showinfo("Информация", "Изображение успешно сохранено!")
+
+    def update_color_preview(self):
+        '''Метод для предварительного просмотра цвета кисти'''
+        self.color_preview.config(bg=self.pen_color)
 
 
 def main():
