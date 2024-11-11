@@ -1,5 +1,5 @@
 import tkinter as tk
-from tkinter import colorchooser, filedialog, messagebox
+from tkinter import colorchooser, filedialog, messagebox, simpledialog
 from PIL import Image, ImageDraw
 
 
@@ -55,6 +55,10 @@ class DrawingApp:
 
         erase_button = tk.Button(control_frame, text="Ластик", command=self.erase)
         erase_button.pack(side=tk.LEFT)
+
+        resize_button = tk.Button(control_frame, text="Изменить размер холста", command=self.resize_canvas)
+        resize_button.pack(side=tk.LEFT)
+
 
     def paint(self, event):
         '''Метод для рисования на холсте при движени мыши.'''
@@ -117,6 +121,18 @@ class DrawingApp:
         '''Метод для предварительного просмотра цвета кисти'''
         self.color_preview.config(bg=self.pen_color)
 
+
+    def resize_canvas(self):
+        '''Метод для изменения размезмеров холста'''
+        width = simpledialog.askinteger("Введите ширину", "Введите новую ширину холста(пикселях):")
+        height = simpledialog.askinteger("Введите высоту", "Введите новую высоту холста(пикселях):")
+
+        if width is not None and height is not None:
+            self.canvas.config(width=width, height=height)  # Изменяем размер холста
+            self.image = Image.new("RGB", (width, height),
+                                   "white")  # Создаем новый объект изображения с новыми размерами
+            self.draw = ImageDraw.Draw(self.image)  # Обновляем self.draw
+            self.clear_canvas()  # Очистка холста после изменения размера
 
 def main():
     root = tk.Tk()
