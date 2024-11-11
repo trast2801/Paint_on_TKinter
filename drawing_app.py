@@ -59,6 +59,9 @@ class DrawingApp:
         resize_button = tk.Button(control_frame, text="Изменить размер холста", command=self.resize_canvas)
         resize_button.pack(side=tk.LEFT)
 
+        text_button = tk.Button(control_frame, text="Текст", command=self.add_text)
+        text_button.pack(side=tk.LEFT)
+
 
     def paint(self, event):
         '''Метод для рисования на холсте при движени мыши.'''
@@ -133,6 +136,24 @@ class DrawingApp:
                                    "white")  # Создаем новый объект изображения с новыми размерами
             self.draw = ImageDraw.Draw(self.image)  # Обновляем self.draw
             self.clear_canvas()  # Очистка холста после изменения размера
+
+    def add_text(self):
+        '''Метод Добавляет текст на холст'''
+        text = simpledialog.askstring("Текст", "Введите текст:")
+        if text:
+            self.text_mode = True
+            self.current_text = text
+
+            self.canvas.bind('<Button-1>', self.place_text)
+
+    def place_text(self, event):
+        '''Метод размещает введенный текст на холсте'''
+        if self.text_mode:
+            x, y = event.x, event.y
+            self.canvas.create_text(x, y, text=self.current_text, fill=self.pen_color, anchor='nw')
+            self.draw.text((x, y), self.current_text, fill=self.pen_color)
+            self.text_mode = False
+            self.canvas.unbind('<Button-1>')
 
 def main():
     root = tk.Tk()
