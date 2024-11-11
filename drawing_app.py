@@ -62,6 +62,8 @@ class DrawingApp:
         text_button = tk.Button(control_frame, text="Текст", command=self.add_text)
         text_button.pack(side=tk.LEFT)
 
+        background_color_button = tk.Button(control_frame, text="Изменить фон", command=self.change_background_color)
+        background_color_button.pack(side=tk.LEFT)
 
     def paint(self, event):
         '''Метод для рисования на холсте при движени мыши.'''
@@ -124,7 +126,6 @@ class DrawingApp:
         '''Метод для предварительного просмотра цвета кисти'''
         self.color_preview.config(bg=self.pen_color)
 
-
     def resize_canvas(self):
         '''Метод для изменения размеров холста'''
         width = simpledialog.askinteger("Введите ширину", "Введите новую ширину холста(пикселях):")
@@ -154,6 +155,13 @@ class DrawingApp:
             self.draw.text((x, y), self.current_text, fill=self.pen_color)
             self.text_mode = False
             self.canvas.unbind('<Button-1>')
+
+    def change_background_color(self):
+        '''Метод изменяет цвет фона'''
+        new_color = colorchooser.askcolor(color='white')[1]
+        if new_color:
+            self.canvas.config(background=new_color)
+
 
 def main():
     root = tk.Tk()
